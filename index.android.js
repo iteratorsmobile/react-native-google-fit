@@ -36,9 +36,18 @@ class RNGoogleFit {
             'DISTANCE_RECORDING',
             (distance) => callback(distance));
 
-        // TODO: add mote activity listeners
-
-        this.eventListeners.push(recordingObserver, distanceObserver)
+            const weightObserver = DeviceEventEmitter.addListener(
+                'WEIGHT_RECORDING',
+                (weight) => callback(weight)
+                    );
+    
+            // TODO: add mote activity listeners
+    
+            this.eventListeners.push(
+                recordingObserver, 
+                distanceObserver,
+                weightObserver,
+                );
     }
 
     //Will be deprecated in future releases

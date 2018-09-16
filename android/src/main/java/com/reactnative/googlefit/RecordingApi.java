@@ -90,6 +90,26 @@ public class RecordingApi {
                     }
                 }
             });
+            Fitness.RecordingApi.subscribe(googleFitManager.getGoogleApiClient(), DataType.TYPE_WEIGHT)
+            .setResultCallback(new ResultCallback <Status> () {
+
+                @Override
+                public void onResult(Status status) {
+
+                    WritableMap map = Arguments.createMap();
+
+                    if (status.isSuccess()) {
+                        map.putBoolean("recording", true);
+                        // Log.i(TAG, "RecordingAPI - Connected");
+                        sendEvent(reactContext, "WEIGHT_RECORDING", map);
+
+                    } else {
+                        map.putBoolean("recording", false);
+                        // Log.i(TAG, "RecordingAPI - Error connecting");
+                        sendEvent(reactContext, "WEIGHT_RECORDING", map);
+                    }
+                }
+            });
     }
 
 
