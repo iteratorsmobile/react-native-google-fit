@@ -143,7 +143,18 @@ LifecycleEventListener {
         }
     }
     
-    
+    @ReactMethod
+    public void getHeightSamples(double startDate,
+                                 double endDate,
+                                 Callback errorCallback,
+                                 Callback successCallback) {
+        try {
+            successCallback.invoke(mGoogleFitManager.getHeightHistory().displayLastWeeksData((long) startDate, (long) endDate));
+        } catch (IllegalViewOperationException e) {
+            errorCallback.invoke(e.getMessage());
+        }
+    }
+
     @ReactMethod
     public void getDailyCalorieSamples(double startDate,
                                        double endDate,
@@ -168,11 +179,32 @@ LifecycleEventListener {
             errorCallback.invoke(e.getMessage());
         }
     }
-    
+
+    @ReactMethod
+    public void saveHeight(ReadableMap heightSample,
+                           Callback errorCallback,
+                           Callback successCallback) {
+
+        try {
+            successCallback.invoke(mGoogleFitManager.getHeightHistory().saveHeight(heightSample));
+        } catch (IllegalViewOperationException e) {
+            errorCallback.invoke(e.getMessage());
+        }
+    }
+
     @ReactMethod
     public void deleteWeight(ReadableMap weightSample, Callback errorCallback, Callback successCallback) {
         try {
             successCallback.invoke(mGoogleFitManager.getWeightsHistory().deleteWeight(weightSample));
+        } catch (IllegalViewOperationException e) {
+            errorCallback.invoke(e.getMessage());
+        }
+    }
+
+    @ReactMethod
+    public void deleteHeight(ReadableMap heightSample, Callback errorCallback, Callback successCallback) {
+        try {
+            successCallback.invoke(mGoogleFitManager.getHeightHistory().deleteHeight(heightSample));
         } catch (IllegalViewOperationException e) {
             errorCallback.invoke(e.getMessage());
         }
