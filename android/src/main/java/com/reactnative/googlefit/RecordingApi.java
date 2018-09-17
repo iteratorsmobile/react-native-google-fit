@@ -42,76 +42,39 @@ public class RecordingApi {
     private static final String TAG = "RecordingApi";
 
     public RecordingApi (ReactContext reactContext, GoogleFitManager googleFitManager) {
-
         this.reactContext = reactContext;
         this.googleFitManager = googleFitManager;
-
     }
 
-    public void subscribe () {
+    public void subscribe (String jsDataType) {
 
-        Fitness.RecordingApi.subscribe(googleFitManager.getGoogleApiClient(), DataType.TYPE_STEP_COUNT_CUMULATIVE)
-            .setResultCallback(new ResultCallback <Status> () {
+        Log.i(TAG,"Subscribe to " + jsDataType );
+        if (jsDataType.equals("STEP_RECORDING")){
+            subscribeToDataType(DataType.TYPE_STEP_COUNT_CUMULATIVE,jsDataType);
+        } else if(jsDataType.equals("DISTANCE_RECORDING")){
+            subscribeToDataType(DataType.TYPE_DISTANCE_DELTA,jsDataType);
+        } else if(jsDataType.equals("WEIGHT_RECORDING")){
+            subscribeToDataType(DataType.TYPE_WEIGHT,jsDataType);
+        } else if(jsDataType.equals("HEIGHT_RECORDING")){
+            subscribeToDataType(DataType.TYPE_HEIGHT,jsDataType);
+        } else {
+            return;
+        }
+    }
 
-                @Override
-                public void onResult(Status status) {
-
+    private void subscribeToDataType(DataType googleFitDataType,final String jsDataType){
+        Log.i(TAG,"sub"+ jsDataType);
+        Fitness.RecordingApi.subscribe(googleFitManager.getGoogleApiClient(), googleFitDataType)
+        .setResultCallback(new ResultCallback <Status> () {
+            @Override
+            public void onResult(Status status) {
                     WritableMap map = Arguments.createMap();
-
-                    if (status.isSuccess()) {
-                        map.putBoolean("recording", true);
-                        Log.i(TAG, "RecordingAPI - Connected");
-                        sendEvent(reactContext, "STEP_RECORDING", map);
-
-                    } else {
-                        map.putBoolean("recording", false);
-                        Log.i(TAG, "RecordingAPI - Error connecting");
-                        sendEvent(reactContext, "STEP_RECORDING", map);
-                    }
-                }
-            });
-            Fitness.RecordingApi.subscribe(googleFitManager.getGoogleApiClient(), DataType.TYPE_DISTANCE_DELTA)
-            .setResultCallback(new ResultCallback <Status> () {
-
-                @Override
-                public void onResult(Status status) {
-
-                    WritableMap map = Arguments.createMap();
-
-                    if (status.isSuccess()) {
-                        map.putBoolean("recording", true);
-                        // Log.i(TAG, "RecordingAPI - Connected");
-                        sendEvent(reactContext, "DISTANCE_RECORDING", map);
-
-                    } else {
-                        map.putBoolean("recording", false);
-                        // Log.i(TAG, "RecordingAPI - Error connecting");
-                        sendEvent(reactContext, "DISTANCE_RECORDING", map);
-                    }
-                }
-            });
-            Fitness.RecordingApi.subscribe(googleFitManager.getGoogleApiClient(), DataType.TYPE_WEIGHT)
-            .setResultCallback(new ResultCallback <Status> () {
-
-                @Override
-                public void onResult(Status status) {
-
-                    WritableMap map = Arguments.createMap();
-
-                    if (status.isSuccess()) {
-                        map.putBoolean("recording", true);
-                        // Log.i(TAG, "RecordingAPI - Connected");
-                        sendEvent(reactContext, "WEIGHT_RECORDING", map);
-
-                    } else {
-                        map.putBoolean("recording", false);
-                        // Log.i(TAG, "RecordingAPI - Error connecting");
-                        sendEvent(reactContext, "WEIGHT_RECORDING", map);
-                    }
+                    map.putString("type", jsDataType);
+                    map.putBoolean("recording", status.isSuccess());
+                    sendEvent(reactContext, jsDataType, map);
                 }
             });
     }
-
 
     private void sendEvent(ReactContext reactContext,
         String eventName, @Nullable WritableMap params) {

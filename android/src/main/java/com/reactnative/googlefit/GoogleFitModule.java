@@ -30,6 +30,8 @@ public class GoogleFitModule extends ReactContextBaseJavaModule implements
 LifecycleEventListener {
     
     private static final String REACT_MODULE = "RNGoogleFit";
+    private static final String TAG = "GoogleFitModule";
+
     private ReactContext mReactContext;
     private GoogleFitManager mGoogleFitManager = null;
     private String GOOGLE_FIT_APP_URI = "com.google.android.apps.fitness";
@@ -82,8 +84,9 @@ LifecycleEventListener {
     }
     
     @ReactMethod
-    public void startFitnessRecording() {
-        mGoogleFitManager.getRecordingApi().subscribe();
+    public void startFitnessRecording(String jsDataType) {
+        Log.i(TAG, "RecordingAPI - start recording " + jsDataType);
+        mGoogleFitManager.getRecordingApi().subscribe(jsDataType);
     }
 
     @ReactMethod
